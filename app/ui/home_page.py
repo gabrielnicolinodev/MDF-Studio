@@ -31,7 +31,8 @@ class HomePage(BasePage):
 
         self.add_section_title("Geradores disponíveis")
         ready = sum(1 for g in PLANNED_GENERATORS if g.available)
-        note = QLabel(f"{ready} gerador disponível; os demais módulos estão "
+        noun = "gerador disponível" if ready == 1 else "geradores disponíveis"
+        note = QLabel(f"{ready} {noun}; os demais módulos estão "
                       "planejados para as próximas etapas.")
         note.setObjectName("pageSubtitle")
         note.setWordWrap(True)

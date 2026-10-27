@@ -33,10 +33,13 @@ def box_page(win):
     return win._pages["generators"].box_page
 
 
-def test_only_rect_box_is_available_and_others_stay_in_development():
+def test_available_generators_and_the_rest_stay_in_development():
+    # Etapa 04 acrescentou "Caixa com tampa deslizante"; os seis módulos originais continuam.
     available = [g.key for g in PLANNED_GENERATORS if g.available]
-    assert available == ["rect_box"]
-    assert len(PLANNED_GENERATORS) == 6
+    assert available == ["rect_box", "sliding_lid_box"]
+    assert len(PLANNED_GENERATORS) == 7
+    in_development = [g.key for g in PLANNED_GENERATORS if not g.available]
+    assert in_development == ["lid_box", "drawers", "organizers", "polygon_box", "dividers"]
 
 
 def test_stage1_navigation_unchanged(window):

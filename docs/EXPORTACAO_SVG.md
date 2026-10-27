@@ -1,8 +1,10 @@
 # Exportação SVG (Etapa 03)
 
-> **Status de validação.** O SVG foi verificado por testes automatizados e aberto num
-> renderizador SVG independente (Qt). **Não foi testado no LightBurn nem em corte
-> físico.** Siga a seção "Checklist antes do primeiro corte" abaixo.
+> **Status de validação.** O SVG é verificado por testes automatizados e foi aberto num
+> renderizador SVG independente (Qt). O autor do projeto relatou tê-lo aberto no CorelDRAW e
+> importado no LightBurn, **com medidas e encaixes conferidos** para a caixa retangular
+> (relato do usuário, fora dos testes automatizados). **Corte físico ainda não validado**;
+> siga o "Checklist antes do primeiro corte". O exportador é o mesmo para todos os modelos.
 
 ## Como exportar
 
@@ -131,7 +133,7 @@ poderia causar corte incompleto ou queima.
 | Identificações/auxiliares fora do grupo de corte | Sim | — | — |
 | Erros de gravação, sobrescrita, cancelamento | Sim | — | — |
 | Renderização por parser independente (Qt) | Feita (manual, uma vez) | — | — |
-| **Importação e escala reais no LightBurn** | **Não** | **Pendente (você)** | — |
+| **Importação e escala reais no LightBurn** | Não | **Feita pelo usuário** (caixa retangular, relato); a conferir para a tampa deslizante | — |
 | **Medidas reais após o corte (régua)** | Não | — | **Pendente (você)** |
 | **Ajuste real dos encaixes** | Não | — | **Pendente (você)** |
 
@@ -139,6 +141,6 @@ poderia causar corte incompleto ou queima.
 
 - Sem validação no LightBurn e sem corte físico (veja a tabela).
 - Disposição simples (sem otimização de chapa); o desenho não representa a chapa real.
-- Só a caixa retangular exporta; os demais geradores ainda não existem.
+- Exportam a caixa retangular e a caixa com tampa deslizante; os demais geradores ainda não existem.
 - Identificações são texto SVG; o LightBurn pode importá-las como texto editável ou
   convertê-las, conforme a versão. Por isso ficam desligadas por padrão.

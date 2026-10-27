@@ -52,6 +52,11 @@ def _fmt(value: float, digits: int = 1) -> str:
 class BoxGeneratorPage(QWidget):
     back_requested = Signal()
 
+    # Pontos de extensão para outros modelos de caixa (ver SlidingLidBoxPage).
+    TITLE = "Caixa retangular"
+    FILE_PREFIX = "caixa"
+    HAS_BOX_TYPE = True
+
     def __init__(self, generator: BoxGenerator | None = None,
                  export_dir_provider: Callable[[], str | None] | None = None,
                  parent=None) -> None:
@@ -72,7 +77,7 @@ class BoxGeneratorPage(QWidget):
         top = QHBoxLayout()
         back = QPushButton("← Geradores")
         back.clicked.connect(self.back_requested.emit)
-        title = QLabel("Caixa retangular")
+        title = QLabel(self.TITLE)
         title.setObjectName("pageTitle")
         top.addWidget(back)
         top.addWidget(title, 1)
@@ -135,10 +140,11 @@ class BoxGeneratorPage(QWidget):
         self.mode_combo.addItem("Medidas externas", DimensionMode.EXTERNAL.value)
         self.mode_combo.addItem("Medidas internas", DimensionMode.INTERNAL.value)
         form.addRow("Modo", self.mode_combo)
-        self.type_combo = QComboBox()
-        self.type_combo.addItem("Fechada (com tampa)", BoxType.CLOSED.value)
-        self.type_combo.addItem("Aberta (sem tampa)", BoxType.OPEN.value)
-        form.addRow("Tipo de caixa", self.type_combo)
+        if self.HAS_BOX_TYPE:
+            self.type_combo = QComboBox()
+            self.type_combo.addItem("Fechada (com tampa)", BoxType.CLOSED.value)
+            self.type_combo.addItem("Aberta (sem tampa)", BoxType.OPEN.value)
+            form.addRow("Tipo de caixa", self.type_combo)
         for name, value in (("width", defaults.width), ("depth", defaults.depth),
                             ("height", defaults.height)):
             lo, hi = LIMITS[name]
@@ -170,6 +176,8 @@ class BoxGeneratorPage(QWidget):
             "Não use compensação de kerf aqui e no LightBurn ao mesmo tempo. "
             "Calibre com um corte de teste: não há garantia de ajuste perfeito sem isso."))
         col.addWidget(frame)
+        for extra in self._build_extra_sections():
+            col.addWidget(extra)
 
         # Disposição
         frame, form, outer = self._section("Disposição das peças")
@@ -273,6 +281,22 @@ class BoxGeneratorPage(QWidget):
         col.addWidget(scroll, 2)
         return wrap
 
+    def _build_extra_sections(self) -> list[QWidget]:
+        """Seções adicionais do formulário (nenhuma na caixa retangular)."""
+        return []
+
+    def _make_parameters(self, values: dict, finger_count: int | None,
+                         errors: list[ValidationIssue]):
+        """Monta os parâmetros do modelo a partir dos campos comuns já lidos."""
+        return BoxParameters(
+            # O Qt devolve o valor (str) do combo; convertemos de volta ao enum.
+            dimension_mode=DimensionMode(self.mode_combo.currentData()),
+            box_type=BoxType(self.type_combo.currentData()),
+            finger_count=finger_count, **values)
+
+    def _extra_summary_rows(self, summary) -> list[str]:
+        return []
+
     def _sync_finger_field(self) -> None:
         self.fields["finger_count"].setEnabled(self.finger_mode.currentData() == "manual")
 
@@ -304,11 +328,7 @@ class BoxGeneratorPage(QWidget):
                     "Número de dedos: informe um número inteiro."))
         lp_values = {n: self._read_number(n, LAYOUT_LABELS[n], errors)
                      for n in ("spacing", "workspace_width", "workspace_height")}
-        params = BoxParameters(
-            # O Qt devolve o valor (str) do combo; convertemos de volta ao enum.
-            dimension_mode=DimensionMode(self.mode_combo.currentData()),
-            box_type=BoxType(self.type_combo.currentData()),
-            finger_count=finger_count, **values)
+        params = self._make_parameters(values, finger_count, errors)
         return params, LayoutParameters(**lp_values), errors
 
     def generate(self) -> BoxResult | None:
@@ -363,6 +383,7 @@ class BoxGeneratorPage(QWidget):
             f"na área de trabalho de {_fmt(s.workspace[0], 0)} × {_fmt(s.workspace[1], 0)} mm",
             f"<b>Área das peças:</b> {_fmt(s.panels_area / 100, 1)} cm² "
             f"(caixa-limite do conjunto: {_fmt(s.bbox_area / 100, 1)} cm²)",
+            *self._extra_summary_rows(s),
             "<b>Dedos:</b> " + "; ".join(
                 f"{j.name}: {j.finger_count} × {mm(j.finger_width)} mm" for j in s.joints[:4]
             ) + " …",
@@ -401,7 +422,7 @@ class BoxGeneratorPage(QWidget):
     def _metadata(self, result: BoxResult) -> SvgMetadata:
         d = result.geometry.dimensions
         return SvgMetadata(
-            title=(f"MDF Studio - Caixa retangular {_fmt(d.ext_width)} x "
+            title=(f"MDF Studio - {self.TITLE} {_fmt(d.ext_width)} x "
                    f"{_fmt(d.ext_depth)} x {_fmt(d.ext_height)} mm (externas)"),
             kerf=result.params.kerf, clearance=result.params.clearance)
 
@@ -434,7 +455,7 @@ class BoxGeneratorPage(QWidget):
 
     def default_file_name(self, result: BoxResult) -> str:
         d = result.geometry.dimensions
-        return (f"caixa_{self._num_name(d.ext_width)}x{self._num_name(d.ext_depth)}"
+        return (f"{self.FILE_PREFIX}_{self._num_name(d.ext_width)}x{self._num_name(d.ext_depth)}"
                 f"x{self._num_name(d.ext_height)}mm.svg")
 
     def _save_document(self, doc: SvgDocument, file_name: str) -> Path | None:

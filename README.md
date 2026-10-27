@@ -4,20 +4,25 @@ Aplicação desktop (Python + PySide6) para, nas próximas etapas, criar projeto
 paramétricos em MDF (caixas, gavetas, organizadores, divisórias) e exportá-los
 em **SVG** compatível com LightBurn / Sculpfun S9.
 
-**Status: Etapa 03 — exportação SVG.** A **caixa retangular** com finger joints
-está funcional (geometria, visualização 2D, disposição das peças) e agora **exporta
-SVG em milímetros** para o LightBurn. Os demais geradores seguem "Em desenvolvimento".
+**Status: Etapa 04 — caixa com tampa deslizante.** Dois geradores estão funcionais, ambos
+com visualização 2D, disposição das peças e **exportação SVG em milímetros** para o
+LightBurn: a **caixa retangular** (finger joints) e a **caixa com tampa deslizante**
+(canaletas nas laterais). Os demais geradores seguem "Em desenvolvimento".
 
-- Gerador, convenções e limitações: [`docs/GERADOR_CAIXA.md`](docs/GERADOR_CAIXA.md)
+- Caixa retangular, convenções e limitações: [`docs/GERADOR_CAIXA.md`](docs/GERADOR_CAIXA.md)
+- Caixa com tampa deslizante (construção, parâmetros, teste físico):
+  [`docs/CAIXA_TAMPA_DESLIZANTE.md`](docs/CAIXA_TAMPA_DESLIZANTE.md)
 - Exportação, importação no LightBurn e checklist de corte:
   [`docs/EXPORTACAO_SVG.md`](docs/EXPORTACAO_SVG.md)
 
-Para usar: **Geradores → Caixa retangular**, preencha as medidas, clique em
+Para usar: **Geradores →** escolha o modelo, preencha as medidas, clique em
 **Gerar projeto** e depois em **Exportar SVG…**.
 
-> **Importante:** a compatibilidade com o LightBurn e o ajuste físico dos encaixes
-> **ainda não foram testados**. Rode o **teste de escala 100×100** e um corte de teste
-> antes de usar uma chapa inteira. O SVG não define potência, velocidade nem passadas.
+> **Importante:** o SVG da caixa retangular foi aberto no LightBurn e no CorelDRAW pelo
+> autor do projeto, com medidas e encaixes conferidos (relato do usuário; não verificado
+> pelos testes automatizados). O **corte físico** e, em especial, o **deslizamento da
+> tampa** ainda precisam de uma peça de teste antes de usar uma chapa inteira. O SVG não
+> define potência, velocidade nem passadas.
 
 Funciona totalmente offline: sem nuvem, APIs externas ou contas.
 

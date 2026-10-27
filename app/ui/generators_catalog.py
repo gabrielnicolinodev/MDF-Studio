@@ -15,6 +15,8 @@ class PlannedGenerator:
 PLANNED_GENERATORS: tuple[PlannedGenerator, ...] = (
     PlannedGenerator("rect_box", "Caixa retangular",
                      "Caixa com encaixes tipo dedo para MDF.", available=True),
+    PlannedGenerator("sliding_lid_box", "Caixa com tampa deslizante",
+                     "Caixa com tampa que desliza em canaletas das laterais.", available=True),
     PlannedGenerator("lid_box", "Caixa com tampa",
                      "Caixa com tampa removível ou articulada."),
     PlannedGenerator("drawers", "Gavetas",
